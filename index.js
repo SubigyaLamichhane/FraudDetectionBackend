@@ -5,6 +5,8 @@ const cors = require('cors');
 
 const app = express();
 
+let executedPythonInstaller = 0;
+
 //allow from all origins
 app.use(
   cors({
@@ -24,20 +26,26 @@ const logger = (err, stdout, stderr) => {
     console.log(stderr);
   }
 };
+const pythonDependenciesInstaller = () => {
+  exec('su', logger);
+  exec('echo "Installing Python Dependencies"', (err, stdout, stderr) => {
+    console.log(stdout);
+  });
+  exec('apt-get update', logger);
+  exec('apt-get install python3-pip', logger);
+  exec('apt-get install python-is-python3', logger);
+  // exec('source server/bin/activate', logger);
+  exec('pip install numpy', logger);
+  exec('pip install -U scikit-learn scipy matplotlib', logger);
+  exec('echo "Commands Executed"', (err, stdout, stderr) => {
+    console.log(stdout);
+  });
+};
 
-exec('su', logger);
-exec('echo "Installing Python Dependencies"', (err, stdout, stderr) => {
-  console.log(stdout);
-});
-exec('apt-get update', logger);
-exec('apt-get install python3-pip', logger);
-exec('apt-get install python-is-python3', logger);
-exec('source server/bin/activate', logger);
-exec('pip install numpy', logger);
-exec('pip install sklearn', logger);
-exec('echo "Commands Executed"', (err, stdout, stderr) => {
-  console.log(stdout);
-});
+if (executedPythonInstaller === 0) {
+  pythonDependenciesInstaller();
+  executedPythonInstaller = 1;
+}
 
 function callToolsPromise(data) {
   const { typeOfPayment, amount, oldbalanceOrg, newbalanceOrg } = data;
