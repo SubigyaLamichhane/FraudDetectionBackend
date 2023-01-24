@@ -25,13 +25,13 @@ const logger = (err, stdout, stderr) => {
   }
 };
 
-exec('su -');
+exec('su', logger);
 exec('echo "Installing Python Dependencies"', (err, stdout, stderr) => {
   console.log(stdout);
 });
-exec('sudo apt-get update', logger);
-exec('sudo apt-get install python3-pip', logger);
-exec('sudo apt-get install python-is-python3', logger);
+exec('apt-get update', logger);
+exec('apt-get install python3-pip', logger);
+exec('apt-get install python-is-python3', logger);
 exec('source server/bin/activate', logger);
 exec('pip install numpy', logger);
 exec('pip install sklearn', logger);
@@ -67,19 +67,7 @@ function callToolsPromise(data) {
 app.use(express.json());
 
 app.get('/', async (req, res) => {
-  const data = req.body;
-
-  let isFraud = await callToolsPromise(data);
-
-  if (isFraud.replace(/(\n)/gm, '') === 'true') {
-    isFraud = true;
-  } else if (isFraud.replace(/(\n)/gm, '') === 'false') {
-    isFraud = false;
-  }
-
-  res.send({
-    isFraud: isFraud,
-  });
+  res.send('Hello World');
 });
 
 app.post('/', async (req, res) => {
