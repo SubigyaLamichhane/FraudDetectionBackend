@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { spawn } = require('child_process');
+const { spawn, exec } = require('child_process');
 const express = require('express');
 const cors = require('cors');
 
@@ -13,19 +13,31 @@ app.use(
   })
 );
 
-// const childPython = spawn('python', ['script.py', 'Subigya']);
+const logger = (err, stdout, stderr) => {
+  if (err) {
+    console.log(err);
+  }
+  if (stdout) {
+    console.log(stdout);
+  }
+  if (stderr) {
+    console.log(stderr);
+  }
+};
 
-// childPython.stdout.on('data', (data) => {
-//   console.log(`stdout: ${data}`);
-// });
-
-// childPython.stderr.on('data', (data) => {
-//   console.log(`stderr: ${data}`);
-// });
-
-// childPython.on('close', (code) => {
-//   console.log(`child process exited with code ${code}`);
-// });
+exec('su -');
+exec('echo "Installing Python Dependencies"', (err, stdout, stderr) => {
+  console.log(stdout);
+});
+exec('sudo apt-get update', logger);
+exec('sudo apt-get install python3-pip', logger);
+exec('sudo apt-get install python-is-python3', logger);
+exec('source server/bin/activate', logger);
+exec('pip install numpy', logger);
+exec('pip install sklearn', logger);
+exec('echo "Commands Executed"', (err, stdout, stderr) => {
+  console.log(stdout);
+});
 
 function callToolsPromise(data) {
   const { typeOfPayment, amount, oldbalanceOrg, newbalanceOrg } = data;
